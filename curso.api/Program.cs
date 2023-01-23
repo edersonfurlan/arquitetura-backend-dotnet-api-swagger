@@ -1,7 +1,13 @@
 using System.Text;
+using curso.api.Business.Repositories;
+using curso.api.Configurations;
+using curso.api.Infrastructure.Data;
+using curso.api.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -60,6 +66,15 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+
+//dependency injection
+builder.Services.AddDbContext<CourseDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IAuthenticationService, JwtService>();
 
 var app = builder.Build();
 
